@@ -8,3 +8,11 @@ register new application on your account on github.com
 
 create the docker compose file and Makefile with their commands
 run -> make backend
+
+create nextjs app with
+-> x create-next-app@latest --ts
+
+edit the tsconfig.json file in client
+
+install dependencies
+-> npm i -D tailwindcss@latest postcss@latest autoprefixer@latest ; npx tailwindcss init -p
