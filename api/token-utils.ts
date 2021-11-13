@@ -1,10 +1,11 @@
-import { AccessTokenPayload, Cookies, RefreshTokenPayload, UserDocument } from "@shared";
+import { AccessToken, AccessTokenPayload, Cookies, RefreshToken, RefreshTokenPayload, UserDocument } from "@shared";
 import jwt from "jsonwebtoken";
 import { CookieOptions, Response } from "express";
 
 enum TokenExpiration {
   Access = 5 * 60, // 5 minutes
   Refresh = 7 * 24 * 60 * 60, // 7 days
+  RefreshIfLessThan = 4 * 24 * 60 * 60, // 4 days
 }
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET!;
@@ -50,4 +51,40 @@ export function buildTokens(user: UserDocument) {
 export function setTokens(res: Response, access: string, refresh?: string) {
   res.cookie(Cookies.AccessToken, access, accessTokenCookieOptions);
   if (refresh) res.cookie(Cookies.RefreshToken, access, refreshTokenCookieOptions);
+}
+
+export function verifyRefreshToken(token: string) {
+  return jwt.verify(token, refreshTokenSecret) as RefreshToken;
+}
+
+export function verifyAccessToken(token: string) {
+  try {
+    return jwt.verify(token, accessTokenSecret) as AccessToken;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export function refreshTokens(current: RefreshToken, tokenVersion: number) {
+  if (tokenVersion !== current.version) throw "Token Revoked";
+
+  const accessPayload: AccessTokenPayload = { userId: current.userId };
+  const accessToken = signAccessToken(accessPayload);
+
+  let refreshPayload: RefreshTokenPayload | undefined;
+  const expiration = new Date(current.exp * 1000);
+  const now = new Date();
+  const secondsUntilExpiration = (expiration.getTime() - now.getTime()) / 1000;
+
+  if (secondsUntilExpiration < TokenExpiration.RefreshIfLessThan) {
+    refreshPayload = { userId: current.userId, version: tokenVersion };
+  }
+  const refreshToken = refreshPayload && signRefreshToken(refreshPayload);
+
+  return { refreshToken, accessToken };
+}
+
+export function clearTokens(res: Response): void {
+  res.cookie(Cookies.AccessToken, "", { ...defaultCookieoptions, maxAge: 0 });
+  res.cookie(Cookies.RefreshToken, "", { ...defaultCookieoptions, maxAge: 0 });
 }

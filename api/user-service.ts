@@ -21,5 +21,9 @@ export async function createUser(githubUserId: number, name: string): Promise<Us
 }
 
 export async function getGithubUserByGithubId(githubUserId: number): Promise<UserDocument | null> {
-  return collection().findOne({ githubUserId: githubUserId.toString() });
+  return await collection().findOne({ githubUserId: githubUserId.toString() });
+}
+
+export async function getUserById(id: string): Promise<UserDocument | null> {
+  return await collection().findOne({ id });
 }

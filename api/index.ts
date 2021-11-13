@@ -1,10 +1,12 @@
+import { Cookies } from "@shared";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express from "express";
+import express, { Request, Response } from "express";
+
 import { databaseClient } from "./database";
 import { getGithubUser } from "./github-adapter";
-import { buildTokens, setTokens } from "./token-utils";
-import { getGithubUserByGithubId, createUser } from "./user-service";
+import { buildTokens, clearTokens, refreshTokens, setTokens, verifyRefreshToken } from "./token-utils";
+import { getGithubUserByGithubId, createUser, getUserById } from "./user-service";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,7 +19,7 @@ app.get("/", (req, res) => {
   res.send("api is healthy");
 });
 
-app.get("/github", async (req, res) => {
+app.get("/github", async (req: Request, res: Response) => {
   // https://github.com/login/oauth/authorize?client_id=****&redirect_uri=http://localhost:3001/github?scope=user:email
   const { code } = req.query;
 
@@ -31,7 +33,18 @@ app.get("/github", async (req, res) => {
   res.redirect(`${process.env.CLIENT_URL}/me`);
 });
 
-app.get("/refresh", async (req, res) => {});
+app.get("/refresh", async (req: Request, res: Response) => {
+  // take the exisiting token and generate a new refresh token
+  try {
+    const current = verifyRefreshToken(req.cookies[Cookies.RefreshToken]);
+    const user = await getUserById(current.userId);
+    if (!user) throw "User not Found";
+    const { accessToken, refreshToken } = refreshTokens(current, user.tokenVersion);
+    setTokens(res, accessToken, refreshToken);
+  } catch (error) {
+    clearTokens(res);
+  }
+});
 app.get("/logout", (req, res) => {});
 app.get("/logout-all", async (req, res) => {});
 app.get("/me", async (req, res) => {});
