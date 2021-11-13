@@ -1,4 +1,4 @@
 {
   "extends": "../tsconfig.json",
-  "references": [{ "paths": "../shared" }]
+  "references": [{ "path": "../shared" }]
 }
