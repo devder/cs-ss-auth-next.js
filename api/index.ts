@@ -2,11 +2,12 @@ import { Cookies } from "@shared";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Request, Response } from "express";
+import { authMiddleware } from "./auth-middleware";
 
 import { databaseClient } from "./database";
 import { getGithubUser } from "./github-adapter";
 import { buildTokens, clearTokens, refreshTokens, setTokens, verifyRefreshToken } from "./token-utils";
-import { getGithubUserByGithubId, createUser, getUserById } from "./user-service";
+import { getGithubUserByGithubId, createUser, getUserById, increaseTokenVersion } from "./user-service";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,7 +34,7 @@ app.get("/github", async (req: Request, res: Response) => {
   res.redirect(`${process.env.CLIENT_URL}/me`);
 });
 
-app.get("/refresh", async (req: Request, res: Response) => {
+app.post("/refresh", async (req: Request, res: Response) => {
   // take the exisiting token and generate a new refresh token
   try {
     const current = verifyRefreshToken(req.cookies[Cookies.RefreshToken]);
@@ -45,9 +46,23 @@ app.get("/refresh", async (req: Request, res: Response) => {
     clearTokens(res);
   }
 });
-app.get("/logout", (req, res) => {});
-app.get("/logout-all", async (req, res) => {});
-app.get("/me", async (req, res) => {});
+
+app.post("/logout", authMiddleware, (req: Request, res: Response) => {
+  clearTokens(res);
+  res.end();
+});
+
+app.post("/logout-all", authMiddleware, async (req: Request, res: Response) => {
+  await increaseTokenVersion(res.locals.token.userId); // revoke the refreshToken
+
+  clearTokens(res);
+  res.end();
+});
+
+app.get("/me", authMiddleware, async (req: Request, res: Response) => {
+  const user = await getUserById(res.locals.token.userId);
+  res.json(user);
+});
 
 async function main() {
   try {

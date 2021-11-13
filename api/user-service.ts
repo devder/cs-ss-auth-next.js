@@ -27,3 +27,9 @@ export async function getGithubUserByGithubId(githubUserId: number): Promise<Use
 export async function getUserById(id: string): Promise<UserDocument | null> {
   return await collection().findOne({ id });
 }
+
+export async function increaseTokenVersion(userId: string): Promise<UserDocument | null> {
+  const result = await collection().findOneAndUpdate({ id: userId }, { $inc: { tokenVersion: 1 } });
+  if (result.ok) return result.value;
+  throw new Error();
+}
