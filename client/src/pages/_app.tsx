@@ -7,7 +7,7 @@ import { UserProvider } from "src/context/user-context";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <UserProvider>
+    <UserProvider initialUser={pageProps?.user}>
       <div className="h-screen">
         <Head>
           <title>Token Auth With Next</title>

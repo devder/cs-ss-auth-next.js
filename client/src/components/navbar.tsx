@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { FC } from "react";
 import { useRouter } from "next/router";
 
-const Navbar = () => {
+const Navbar: FC = () => {
   const router = useRouter();
 
   const yieldLinkStyle = (route: string): string => {

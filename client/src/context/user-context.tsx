@@ -9,7 +9,7 @@ export interface IUserContext {
 
 export const UserContext = createContext<IUserContext>(null!);
 
-export function useUser() {
+export function useUser(): IUserContext {
   return useContext(UserContext);
 }
 

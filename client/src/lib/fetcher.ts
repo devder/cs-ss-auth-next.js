@@ -7,7 +7,7 @@ async function refreshTokens() {
   await axios.post(`${env.apiUrl}/refresh`, undefined, { withCredentials: true });
 }
 
-const handleRequest = async (request: () => Promise<AxiosResponse>): Promise<AxiosResponse> => {
+export const handleRequest = async (request: () => Promise<AxiosResponse>): Promise<AxiosResponse> => {
   try {
     return await request();
   } catch (_e) {
