@@ -5,7 +5,6 @@ import { Buffer } from "buffer";
 import * as WebSocket from "ws";
 import * as cookie from "cookie";
 import jwt from "jsonwebtoken";
-import { listenerCount } from "process";
 
 interface AuthenticatedSocket extends WebSocket {
   accessToken: AccessToken;
@@ -27,7 +26,7 @@ server.on("upgrade", (request: IncomingMessage, socket: Socket, head: Buffer) =>
     wss.handleUpgrade(request, socket, head, ws => {
       // to decide which socket belongs to which user, store the accesstoken payload on the websocket
       (ws as AuthenticatedSocket).accessToken = accessToken;
-      ws.emit("connection", ws);
+      wss.emit("connection", ws);
     });
   } catch (error) {
     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
@@ -59,4 +58,6 @@ wss.on("connection", (socket: AuthenticatedSocket) => {
   });
 });
 
-server.listen(3000);
+server.listen(3000, () => {
+  console.log("web socket running...");
+});

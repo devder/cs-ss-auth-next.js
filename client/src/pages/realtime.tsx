@@ -47,6 +47,8 @@ const Realtime: NextPage = props => {
   const sendMessage = () => {
     if (ws.current && isOpen) {
       ws.current.send(value);
+      console.log(messages);
+
       setValue("");
     }
   };
