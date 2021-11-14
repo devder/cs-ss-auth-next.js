@@ -26,3 +26,8 @@ export interface AccessToken extends AccessTokenPayload {
 export interface RefreshToken extends RefreshTokenPayload {
   exp: number;
 }
+
+export interface Message {
+  text: string;
+  userId: string;
+}

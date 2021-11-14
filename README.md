@@ -1,18 +1,46 @@
-install dependencies
+# Stack
 
-add config to home tsconfig.json file and extend the file in the sub tsconfig files
-make project composite to allow the other tsconfig files to extend it
-restart TS server from vscode if you have errors
+**Backend**: Node.js, Typescript, MongoDB
 
-register new application on your account on github.com
+**Frontend**: Next.js, Typescript
 
-create the docker compose file and Makefile with their commands
-run -> make backend
+**DevOps**: Docker, Kubernetes,
 
-create nextjs app with
--> x create-next-app@latest --ts
+# Usage
 
-edit the tsconfig.json file in client
+**Requirements**: Docker, Docker Compose, Yarn, NPM, Node.js
 
-install dependencies
--> npm i -D tailwindcss@latest postcss@latest autoprefixer@latest ; npx tailwindcss init -p
+**Setup**
+
+- `make setup`
+- Create GitHub OAuth app [here](https://github.com/settings/developers)
+  - Set "Homepage URL" to `http://localhost:3000`
+  - Set "Authorization callback URL" to `http://localhost:3000/github`
+  - Set `GITHUB_CLIENT_ID` in [`.env.development`](.env.development)
+  - Set `NEXT_PUBLIC_GITHUB_CLIENT_ID` in [`client/.env.development`](client/.env.development)
+  - "Generate a new client secret"
+  - Set `GITHUB_CLIENT_SECRET` in [`.env.development`](.env.development)
+
+**Development**
+
+- `make client` (Start Next.js development server, http://localhost:3000)
+- `make backend` (Start api and realtime development backend services)
+
+# Codebase
+
+**Services**
+
+- [`client`](client) **Next.js client** (web application)
+- [`api`](api) **Node.js server** (http api)
+- [`realtime`](realtime) **Node.js server** (websocket server)
+- [`shared`](shared) **Typescript lib** (shared code)
+
+# Deployment
+
+**Commands**
+
+- `make deploy` (Build and deploy services to Kubernetes cluster)
+- `make destroy` (Destroy cloud resources)
+- `make client-image` (Build and push client Docker image)
+- `make api-image` (Build and push api Docker image)
+- `make realtime-image` (Build and push Docker image)

@@ -16,7 +16,24 @@ services:
     working_dir: /
     # the tsconfig-paths cmd makes the shared library available in the api service
     command: yarn run ts-node-dev --project api/tsconfig.json -r tsconfig-paths/register api/index.ts
-    env_file: .env.development
+    env_file: .env.local
+
+  realtime-service:
+    image: node:alpine
+    container_name: auth_realtime
+    # add some files to the docker container
+    volumes:
+      - ./node_modules:/node_modules
+      - ./realtime:/realtime
+      - ./shared:/shared
+      - ./tsconfig.json:/tsconfig.json
+      - ./package.json:/package.json
+    ports:
+      - "3002:3000"
+    working_dir: /
+    # the tsconfig-paths cmd makes the shared library available in the realtime service
+    command: yarn run ts-node-dev --project realtime/tsconfig.json -r tsconfig-paths/register realtime/index.ts
+    env_file: .env.local
 
   mongodb:
     image: mongo:5

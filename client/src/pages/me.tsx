@@ -5,8 +5,9 @@ import { useUser } from "src/context/user-context";
 import env from "src/lib/environment";
 import { fetcher } from "src/lib/fetcher";
 import Logout from "src/components/logout";
+import { NextPage } from "next";
 
-export default function Me() {
+const Me: NextPage = () => {
   // this page is for CS auth: user will be authenticated in the browser through javascript
   const { user, setUser } = useUser();
 
@@ -30,4 +31,6 @@ export default function Me() {
       </div>
     </main>
   );
-}
+};
+
+export default Me;
