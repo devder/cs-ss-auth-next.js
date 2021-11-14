@@ -1,4 +1,4 @@
-import { AccessToken, Cookies } from "@shared";
+import { AccessToken, Cookies, Message } from "@shared";
 import { createServer, IncomingMessage, ServerResponse } from "http";
 import { Socket } from "net";
 import { Buffer } from "buffer";
@@ -9,10 +9,6 @@ import { listenerCount } from "process";
 
 interface AuthenticatedSocket extends WebSocket {
   accessToken: AccessToken;
-}
-interface Message {
-  text: string;
-  userId: string;
 }
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET!;
@@ -58,7 +54,7 @@ function broadcast(message: Message) {
 wss.on("connection", (socket: AuthenticatedSocket) => {
   socket.on("message", (message: Buffer) => {
     validateExpiration(socket);
-    const msg = { text: message.toString(), userId: socket.accessToken.userId };
+    const msg = { text: message.toString(), userId: socket.accessToken.userId } as Message;
     broadcast(msg);
   });
 });

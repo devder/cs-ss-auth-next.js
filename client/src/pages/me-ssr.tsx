@@ -1,19 +1,23 @@
-import { GetServerSideProps } from "next";
-import { FC } from "react";
+import { GetServerSideProps, NextPage } from "next";
 import { fetcherSSR } from "src/lib/fetcher-ssr";
 import env from "src/lib/environment";
 import { UserDocument } from "@shared";
 import { useUser } from "src/context/user-context";
 import Logout from "src/components/logout";
 
-const MeSSR: FC = () => {
+const MeSSR: NextPage = () => {
   const { user } = useUser();
   return (
     <main className="flex items-center justify-center h-full">
       <div className="space-y-4 text-center">
         <h1 className="px-4 py-2 text-lg font-medium bg-gray-200 rounded">Server Side Authentication</h1>
         {user ? <p>Hi, {user.name} 👋🏽</p> : <p>Loading...</p>}
-        {/* When you view the page spurce, the user will be populated already*/}
+        <em>
+          Your name was populated from the server,
+          <a target="_blank" rel="noreferrer" href={`view-source:${env.clientUrl}`}>
+            view this page source
+          </a>{" "}
+        </em>
         <Logout />
       </div>
     </main>
