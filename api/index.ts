@@ -45,6 +45,7 @@ app.post("/refresh", async (req: Request, res: Response) => {
   } catch (error) {
     clearTokens(res);
   }
+  res.end();
 });
 
 app.post("/logout", authMiddleware, (req: Request, res: Response) => {

@@ -11,7 +11,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     return next(new Error("Not Signed in"));
   }
 
-  // stroe the token on the response object such that the next middleware can access it
+  // store the token on the response object such that the next middleware can access it
   res.locals.token = token;
 
   next();

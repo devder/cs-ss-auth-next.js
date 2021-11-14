@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import env from "lib/environment";
+import env from "../lib/environment";
 
 const Home: NextPage = () => {
   const githubUrl = `https://github.com/login/oauth/authorize?client_id=${env.githubClientId}&

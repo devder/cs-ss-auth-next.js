@@ -50,7 +50,7 @@ export function buildTokens(user: UserDocument) {
 
 export function setTokens(res: Response, access: string, refresh?: string) {
   res.cookie(Cookies.AccessToken, access, accessTokenCookieOptions);
-  if (refresh) res.cookie(Cookies.RefreshToken, access, refreshTokenCookieOptions);
+  if (refresh) res.cookie(Cookies.RefreshToken, refresh, refreshTokenCookieOptions);
 }
 
 export function verifyRefreshToken(token: string) {
