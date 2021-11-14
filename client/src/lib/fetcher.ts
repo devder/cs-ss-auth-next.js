@@ -3,7 +3,7 @@ import env from "./environment";
 
 export type QueryResponse<T> = [error: string | null, data: T | null];
 
-async function refreshTokens() {
+export async function refreshTokens() {
   await axios.post(`${env.apiUrl}/refresh`, undefined, { withCredentials: true });
 }
 
